@@ -2,6 +2,7 @@ package com.cst438.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
@@ -95,6 +97,32 @@ public class ScheduleController {
 			throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "Course_id invalid or student not allowed to register for the course.  "+courseDTO.course_id);
 		}
 		
+	}
+	
+	@PostMapping("/addStudent")
+	@Transactional
+	public void addStudent( @RequestBody Student student) {
+		if(student.getName() != null && student.getEmail() != null) {
+			student.setStatus(null);
+			student.setStatusCode(0);
+			
+			studentRepository.save(student);
+		} else {
+			throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "Invalid student or email address.  ");
+		}
+	}
+	
+	@PutMapping("/hold/{student_id}")
+	public void addHold( @PathVariable int student_id, @RequestBody Student student) {
+		Student tempStudent = studentRepository.findById(student_id).orElse(null);
+		
+		if (tempStudent != null) {
+			tempStudent.setStatus(student.getStatus());
+			tempStudent.setStatusCode(student.getStatusCode());
+			studentRepository.save(tempStudent);
+		} else {
+			throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "Invalid student");
+		}
 	}
 	
 	@DeleteMapping("/schedule/{enrollment_id}")
