@@ -99,32 +99,6 @@ public class ScheduleController {
 		
 	}
 	
-	@PostMapping("/addStudent")
-	@Transactional
-	public void addStudent( @RequestBody Student student) {
-		if(student.getName() != null && student.getEmail() != null) {
-			student.setStatus(null);
-			student.setStatusCode(0);
-			
-			studentRepository.save(student);
-		} else {
-			throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "Invalid student or email address.  ");
-		}
-	}
-	
-	@PutMapping("/hold/{student_id}")
-	public void addHold( @PathVariable int student_id, @RequestBody Student student) {
-		Student tempStudent = studentRepository.findById(student_id).orElse(null);
-		
-		if (tempStudent != null) {
-			tempStudent.setStatus(student.getStatus());
-			tempStudent.setStatusCode(student.getStatusCode());
-			studentRepository.save(tempStudent);
-		} else {
-			throw  new ResponseStatusException( HttpStatus.BAD_REQUEST, "Invalid student");
-		}
-	}
-	
 	@DeleteMapping("/schedule/{enrollment_id}")
 	@Transactional
 	public void dropCourse(  @PathVariable int enrollment_id  ) {
