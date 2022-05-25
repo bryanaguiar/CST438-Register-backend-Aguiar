@@ -34,6 +34,8 @@ public class GradebookServiceMQ extends GradebookService {
 	public void enrollStudent(String student_email, String student_name, int course_id) {
 		 
 		//TODO  complete this method in homework 4
+		EnrollmentDTO student = new EnrollmentDTO(student_email, student_name, course_id);
+		rabbitTemplate.convertAndSend(gradebookQueue.getName(), student);
 		
 	}
 	
@@ -42,7 +44,15 @@ public class GradebookServiceMQ extends GradebookService {
 	public void receive(CourseDTOG courseDTOG) {
 		
 		//TODO  complete this method in homework 4
-		
+		int i = 0;
+		while(i < courseDTOG.grades.size())
+		{
+			String student_email = courseDTOG.grades.get(i).student_email;
+			String grade = courseDTOG.grades.get(i).grade;
+			int course_id = courseDTOG.course_id;
+			Enrollment enrollment = enrollmentRepository.findByEmailAndCourseId(student_email, course_id);
+			enrollment.setCourseGrade(grade);
+		}
 	}
 	
 	

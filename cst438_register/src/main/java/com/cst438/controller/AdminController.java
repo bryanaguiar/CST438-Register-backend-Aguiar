@@ -25,7 +25,7 @@ import com.cst438.domain.StudentRepository;
 import com.cst438.service.GradebookService;
 
 @RestController
-
+@CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 	@Autowired
 	StudentRepository studentRepository;
