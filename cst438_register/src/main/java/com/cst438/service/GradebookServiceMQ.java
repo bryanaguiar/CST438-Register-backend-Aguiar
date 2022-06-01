@@ -52,6 +52,7 @@ public class GradebookServiceMQ extends GradebookService {
 			int course_id = courseDTOG.course_id;
 			Enrollment enrollment = enrollmentRepository.findByEmailAndCourseId(student_email, course_id);
 			enrollment.setCourseGrade(grade);
+			enrollmentRepository.save(enrollment);
 		}
 	}
 	
