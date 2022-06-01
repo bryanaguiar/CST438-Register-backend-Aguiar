@@ -33,6 +33,7 @@ public class CourseController {
 			
 			Enrollment enrollment = enrollmentRepository.findByEmailAndCourseId(student_email, course_id);
 			enrollment.setCourseGrade(grade);
+			enrollmentRepository.save(enrollment);
 		}
 	}
 
