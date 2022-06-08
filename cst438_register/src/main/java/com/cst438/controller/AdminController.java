@@ -2,33 +2,31 @@ package com.cst438.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cst438.domain.Course;
-import com.cst438.domain.CourseRepository;
-import com.cst438.domain.Enrollment;
-import com.cst438.domain.EnrollmentRepository;
-import com.cst438.domain.ScheduleDTO;
+
 import com.cst438.domain.Student;
 import com.cst438.domain.StudentDTO;
 import com.cst438.domain.StudentRepository;
-import com.cst438.service.GradebookService;
+import com.cst438.domain.Admin;
+import com.cst438.domain.AdminRepository;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 	@Autowired
 	StudentRepository studentRepository;
+	@Autowired
+	AdminRepository adminRepository;
 	
 	/*
 	 * Add student to database
@@ -39,7 +37,15 @@ public class AdminController {
 	
 	@PostMapping("/addStudent")
 	@Transactional
-	public StudentDTO addStudent (@RequestBody StudentDTO studentDTO) {
+	public StudentDTO addStudent (@RequestBody StudentDTO studentDTO, @AuthenticationPrincipal OAuth2User principal) {
+		String admin_email = principal.getAttribute("email");
+		
+		Admin admin = adminRepository.findByEmail(admin_email);
+		if(admin == null)
+		{
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid admin access");
+		}
+		
 		Student tempstudent = new Student();
 		tempstudent = studentRepository.findByEmail(studentDTO.studentEmail);
 		
@@ -65,7 +71,14 @@ public class AdminController {
 	 * As an administrator, I can release the HOLD on student registration.
 	 */
 	@PutMapping("/hold/{student_id}")
-	public StudentDTO changeHold(@RequestBody StudentDTO studentDTO, @PathVariable("student_id") int student_id) {
+	public StudentDTO changeHold(@RequestBody StudentDTO studentDTO, @PathVariable("student_id") int student_id, @AuthenticationPrincipal OAuth2User principal) {
+		String admin_email = principal.getAttribute("email");
+		
+		Admin admin = adminRepository.findByEmail(admin_email);
+		if(admin == null)
+		{
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid admin access");
+		}
 		Student student = studentRepository.findById(student_id).orElse(null);
 		
 		if (student != null) {
