@@ -25,7 +25,7 @@ public class StudentDTO {
 	
 	@Override
 	public String toString() {
-		return "EnrollmentDTO [id=" + id + ", studentName=" + studentName + ", studentEmail=" + studentEmail
+		return "StudentDTO [id=" + id + ", studentName=" + studentName + ", studentEmail=" + studentEmail
 				+ ", status=" + status + ", status_code=" + statusCode +"]";
 	}
 
